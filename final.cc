@@ -256,7 +256,10 @@ main(int argc, char* argv[])
     std::cout << "Average delay: " << totalAverageDelay / totalFlows << "\n";
     std::cout << "Total transmitted packets: " << totalPacketsTx << "\n";
 
-            // View the topology in NetAnim
+    // Create filename with format "FinalFlow-<numNodes>-<distance>-<numPackets>-<interval>.xml"
+    std::string filename = "FinalFlow-" + std::to_string(numNodes) + "-" + std::to_string(distance) + "-" + std::to_string(numPackets) + "-" + std::to_string(interval) + ".xml";
+    monitor->SerializeToXmlFile(filename, true, true);
+    // View the topology in NetAnim
     AnimationInterface anim ("FinalTopology.xml");
 
     // anim.SetConstantPosition (c.Get(0), 0, distance);
