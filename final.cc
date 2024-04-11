@@ -188,8 +188,6 @@ main(int argc, char* argv[])
                                 packetSize,
                                 numPackets,
                                 interPacketInterval); 
-            
-            //NS_LOG_UNCOND("Node " << nodeId << " sending to " << sinkNode);
         }
     }
 
@@ -212,6 +210,12 @@ main(int argc, char* argv[])
     FlowMonitorHelper flowmon;
     Ptr<FlowMonitor> monitor = flowmon.InstallAll();
 
+    double totalDeliveryRatio = 0.0;
+    double totalAverageDelay = 0.0;
+    uint32_t totalPacketsTx = 0;
+    uint32_t totalPacketsRx = 0;
+    uint32_t totalFlows = 0;
+
 
     Simulator::Stop(Seconds(100.0));
     Simulator::Run();
@@ -233,7 +237,24 @@ main(int argc, char* argv[])
                   << "\n";
         std::cout << "  Average Delay: " << i->second.delaySum.GetSeconds() / i->second.rxPackets
                   << "\n";
+
+        totalDeliveryRatio += i->second.rxPackets * 1.0 / i->second.txPackets;
+        totalFlows++;
+        totalPacketsTx += i->second.txPackets;
+        totalPacketsRx += i->second.rxPackets;
+        if (!std::isnan(i->second.delaySum.GetSeconds() / i->second.rxPackets)){
+            totalAverageDelay += i->second.delaySum.GetSeconds() / i->second.rxPackets;
+        }
     }
+    std::cout << "\n" << std::endl;
+    std::cout << "--- Flow Monitor Results ---\n"
+                << std::endl;
+    std::cout << "============================\n" << std::endl;
+    std::cout << "Total received packets: " << totalPacketsRx << "\n";
+    std::cout << "Total flows: " << totalFlows << "\n";
+    std::cout << "Average delivery ratio: " << totalDeliveryRatio / totalFlows << "\n";
+    std::cout << "Average delay: " << totalAverageDelay / totalFlows << "\n";
+    std::cout << "Total transmitted packets: " << totalPacketsTx << "\n";
 
             // View the topology in NetAnim
     AnimationInterface anim ("FinalTopology.xml");
